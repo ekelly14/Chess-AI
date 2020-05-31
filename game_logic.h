@@ -37,12 +37,24 @@ void copyBoard(char gameBoard[][8], char copyBoard[][8], char character, int sta
 //DESC: Find the king on the board
 void getKingPos(char gameBoard[][8], string color, int & kingx, int & kingy);
 
+//PRE : As of now, function will check if x,y are between 0 and 7
+//POST: Returns TRUE if valid, FALSE if not
+//DESC: Checks if a given x,y is a valid space on the game board
+bool validSpace(char gameBoard[][8], int x, int y);
+
 class gameState{
   public:
     char gameBoard[8][8]; //Representation of the game board
-    bool isFirstMove;     //TRUE if is the first move, FALSE if else
+    int hx;               //the heuristic value of the current gamestate
     string castling;      //The string in the castling position of the fen string
     string en_passant;    //The string in the en passant positon of the fen string
+    string move;          //Relevant move string
+
+
+    //Constructor: Initializes the board and the move
+    gameState(char board[][8], string relevantMove);
+    //default constructor
+    gameState();
 
     //PRE : FEN string must be in fen notation
     //POST: gameState's board will be populated
@@ -57,48 +69,68 @@ class gameState{
     //PRE : Board must be populated correctly, color must be "black" or "white"
     //POST: Populate valid_moves with all the valid moves of the color's board pieces
     //DESC: Finds all the color's valid possible moves
-    void get_valid_moves(vector<string> & valid_moves, string color, char gameBoard[][8]);
+    void get_valid_moves(vector<gameState> & valid_moves, string color, char gameBoard[][8]);
+
+    //PRE : Board must be initialized
+    //POST: populates the hx variable with the heuristic value
+    //DESC: Generates a heuristic for the current state.
+    void get_heuristic(string color);
+
+    //PRE : Board must be initialized.
+    //POST: Will check if the other king is still on the board. TRUE if it is gone
+    //DESC: Checks if the current state has checkmated the other player
+    bool is_checkmate(string color);
 
   private:
     //PRE : gameBoard must be populated correctly, x,y must be on the game board
     //POST: valid pawn moves from x,y will be added to valid_moves
     //DESC: Generate pawn moves from position x,y
-    void get_pawn_moves(vector<string> & valid_moves, string color, int x, int y);
+    void get_pawn_moves(vector<gameState> & valid_moves, string color, int x, int y);
 
     //PRE : gameBoard must be populated correctly, x,y must be on the game board
     //POST: valid knight moves from x,y will be added to valid_moves
     //DESC: Generate knight moves from position x,y
-    void get_knight_moves(vector<string> & valid_moves, string color, int x, int y);
+    void get_knight_moves(vector<gameState> & valid_moves, string color, int x, int y);
 
     //PRE : gameBoard must be populated correctly, x,y must be on the game board
     //POST: valid bishop moves from x,y will be added to valid_moves
     //DESC: Generate bishop moves from position x,y
-    void get_bishop_moves(vector<string> & valid_moves, string color, int x, int y);
+    void get_bishop_moves(vector<gameState> & valid_moves, string color, int x, int y);
 
     //PRE : gameBoard must be populated correctly, x,y must be on the game board
     //POST: valid rook moves from x,y will be added to valid_moves
     //DESC: Generate rook moves from position x,y
-    void get_rook_moves(vector<string> & valid_moves, string color, int x, int y);
+    void get_rook_moves(vector<gameState> & valid_moves, string color, int x, int y);
 
     //PRE : gameBoard must be populated correctly, x,y must be on the game board
     //POST: valid queen moves from x,y will be added to valid_moves
     //DESC: Generate queen moves from position x,y
-    void get_queen_moves(vector<string> & valid_moves, string color, int x, int y);
+    void get_queen_moves(vector<gameState> & valid_moves, string color, int x, int y);
 
     //PRE : gameBoard must be populated correctly, x,y must be on the game board
     //POST: valid king moves from x,y will be added to valid_moves
     //DESC: Generate king moves from position x,y
-    void get_king_moves(vector<string> & valid_moves, string color, int x, int y);
+    void get_king_moves(vector<gameState> & valid_moves, string color, int x, int y);
 
     //PRE : gameBoard must be populated correctly, castling string must be set
     //POST: valid castling moves will be added to valid_moves
     //DESC: Generate castling moves from castling string
-    void get_castling_moves(vector<string> & valid_moves);
+    void get_castling_moves(vector<gameState> & valid_moves);
 
     //PRE : gameBoard must be populated correctly, en_passant string must be set
     //POST: valid en passant moves will be added to valid_moves
     //DESC: Generate en passant moves from en_passant string
-    void get_en_passant_moves(vector<string> & valid_moves, string color);
+    void get_en_passant_moves(vector<gameState> & valid_moves, string color);
+
+    //PRE : gameboard must be initialized
+    //POST: Will add valid potential moves to  the valid_moves vector
+    //DESC: Check the diagonal axes for  potential moves
+    void check_diagonal(vector<gameState> & valid_moves, char character, string color, int x, int y);
+
+    //PRE : gameboard must eb initialized
+    //POST: Will add valid potential moves to the valid_moves vector
+    //DESC: Check the vertical and horizontal axes for potential moves
+    void check_axes(vector<gameState> & valid_moves,  char character, string color, int x, int y);
 };
 
 #endif

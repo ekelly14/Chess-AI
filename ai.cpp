@@ -5,7 +5,7 @@
 
 // <<-- Creer-Merge: includes -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // You can add #includes here for your AI.
-#include "game_logic.h" 
+#include "algorithms.h" 
 // <<-- /Creer-Merge: includes -->>
 
 namespace cpp_client
@@ -71,37 +71,25 @@ std::string AI::make_move()
     //Create an instance of the game
     gameState startState;
 
-    //Determine if this is the first turn
-    if(game->history.size() == 0 ){
-      startState.isFirstMove = true;
-    } else {
-      startState.isFirstMove = false;
-    }
-
     //Populate the gamestate datastructure using the FEN string
     string fen = game->fen;
     startState.populate_board(fen);
 
     //Print the board to the user before the move is made
-    startState.print_board();
+    //startState.print_board();
 
     //Generate all valid moves that can be made
-    vector<string> moves;
+    vector<gameState> moves;
     startState.get_valid_moves(moves, player->color, startState.gameBoard);
 
-    srand(time(NULL));
-    //Randomly choose one, then find moves that originate from the same piece
-    int randIndex = (rand() % moves.size());
-    string moveSubStr =  moves[randIndex].substr(0,2);
-    for(int k = 0; k < moves.size(); k++){
-      if(moves[k].substr(0,2) == moveSubStr){
-        cout << moves[k] << " ";
-      }
-    }
-    cout << endl;
+    gameState bestState;
+    bestState = IDMM(moves, player->color);
+    cout << "\n\n===================\n";
+    bestState.print_board();
+    return bestState.move;
     // <<-- /Creer-Merge: makeMove -->>
     //return std::string{};
-    return moves[randIndex];
+
 }
 
 //<<-- Creer-Merge: methods -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
