@@ -83,8 +83,9 @@ std::string AI::make_move()
     startState.get_valid_moves(moves, player->color, startState.gameBoard);
 
     gameState bestState;
-    bestState = IDMM(moves, player->color);
+    bestState = IDMM(moves, player->color, player->time_remaining);
     cout << "\n\n===================\n";
+    cout << player->time_remaining << endl;
     bestState.print_board();
     return bestState.move;
     // <<-- /Creer-Merge: makeMove -->>
